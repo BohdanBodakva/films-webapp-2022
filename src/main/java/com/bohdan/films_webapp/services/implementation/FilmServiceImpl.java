@@ -2,23 +2,23 @@ package com.bohdan.films_webapp.services.implementation;
 
 import com.bohdan.films_webapp.DAO.Film;
 import com.bohdan.films_webapp.DAO.enums.FilmStatus;
-import com.bohdan.films_webapp.exception_handler.FilmNotFoundException;
+import com.bohdan.films_webapp.exceptions.FilmNotFoundException;
+import com.bohdan.films_webapp.exceptions.FilmValidationException;
 import com.bohdan.films_webapp.repositories.FilmRepository;
 import com.bohdan.films_webapp.services.FilmService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.bohdan.films_webapp.validation.CustomValidation;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class FilmServiceImpl implements FilmService {
     private final FilmRepository filmRepository;
-
-    @Autowired
-    public FilmServiceImpl(FilmRepository filmRepository) {
-        this.filmRepository = filmRepository;
-    }
+    private final CustomValidation validation;
 
     @Override
     public List<Film> getAllFilms() {
@@ -53,22 +53,28 @@ public class FilmServiceImpl implements FilmService {
 
 
     @Override
-    public Film saveFilm(Film film) {
-        return filmRepository.save(film);
+    public Film saveFilm(Film film) throws FilmValidationException {
+        if(validation.validateFilm(film)){
+            return filmRepository.save(film);
+        }
+        throw new FilmValidationException("Film with name = " + film.getName() + " wasn't validated");
     }
 
     @Override
-    public Film updateFilmById(int id, Film film) throws FilmNotFoundException {
-        Film filmToUpdate = filmRepository.findById(id)
-                .orElseThrow(() -> new FilmNotFoundException("Film with id = " + id + " doesn't exist"));
+    public Film updateFilmById(int id, Film film) throws FilmNotFoundException, FilmValidationException {
+        if(validation.validateFilmForUpdating(film)) {
+            Film filmToUpdate = filmRepository.findById(id)
+                    .orElseThrow(() -> new FilmNotFoundException("Film with id = " + id + " doesn't exist"));
 
-        filmToUpdate.setName(film.getName());
-        filmToUpdate.setYear(film.getYear());
-        filmToUpdate.setImageName(film.getImageName());
-        filmToUpdate.setDescription(film.getDescription());
-        filmToUpdate.setStatus(film.getStatus());
+            filmToUpdate.setName(film.getName());
+            filmToUpdate.setYear(film.getYear());
+            filmToUpdate.setImageName(film.getImageName());
+            filmToUpdate.setDescription(film.getDescription());
+            filmToUpdate.setStatus(film.getStatus());
 
-        return filmRepository.save(filmToUpdate);
+            return filmRepository.save(filmToUpdate);
+        }
+        throw new FilmValidationException("Film with name = " + film.getName() + " wasn't validated");
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.bohdan.films_webapp.exception_handler;
+package com.bohdan.films_webapp.exceptions;
 
 public class FilmNotFoundException extends Exception{
     public FilmNotFoundException(String message) {

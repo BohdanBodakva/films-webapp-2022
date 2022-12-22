@@ -1,26 +1,25 @@
 package com.bohdan.films_webapp.services.implementation;
 
-import com.bohdan.films_webapp.DAO.Film;
 import com.bohdan.films_webapp.DAO.User;
 import com.bohdan.films_webapp.DAO.enums.UserStatus;
-import com.bohdan.films_webapp.exception_handler.FilmNotFoundException;
-import com.bohdan.films_webapp.exception_handler.UserNotFoundException;
+import com.bohdan.films_webapp.exceptions.UserNotFoundException;
+import com.bohdan.films_webapp.exceptions.UserValidationException;
 import com.bohdan.films_webapp.repositories.UserRepository;
 import com.bohdan.films_webapp.services.UserService;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.bohdan.films_webapp.validation.CustomValidation;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final CustomValidation validation;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public List<User> getAllUsers() {
@@ -34,23 +33,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser(User user) {
-        user.setStatus(UserStatus.ACTIVE);
-        return userRepository.save(user);
+    public User saveUser(User user) throws UserValidationException {
+        if(validation.validateUser(user)){
+            user.setStatus(UserStatus.ACTIVE);
+            return userRepository.save(user);
+        }
+        throw new UserValidationException("User with email = " + user.getEmail() + " wasn't validated");
     }
 
     @Override
-    public User updateUserById(int id, User user) throws UserNotFoundException {
-        User userToUpdate = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User with id = " + id + " doesn't exist"));
+    public User updateUserById(int id, User user) throws UserNotFoundException, UserValidationException {
+        if(validation.validateUserForUpdating(user)){
+            User userToUpdate = userRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException("User with id = " + id + " doesn't exist"));
 
-        userToUpdate.setName(user.getName());
-        userToUpdate.setSurname(user.getSurname());
-        userToUpdate.setEmail(user.getEmail());
-        userToUpdate.setPassword(user.getPassword());
-        userToUpdate.setStatus(user.getStatus());
+            userToUpdate.setName(user.getName());
+            userToUpdate.setSurname(user.getSurname());
+            userToUpdate.setEmail(user.getEmail());
+            userToUpdate.setPassword(user.getPassword());
+            userToUpdate.setStatus(user.getStatus());
 
-        return userRepository.save(userToUpdate);
+            return userRepository.save(userToUpdate);
+        }
+        throw new UserValidationException("User with email = " + user.getEmail() + " wasn't validated");
     }
 
     @Override
@@ -82,4 +87,6 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
     }
+
+
 }

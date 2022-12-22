@@ -1,9 +1,7 @@
 package com.bohdan.films_webapp.services;
 
 import com.bohdan.films_webapp.DAO.StarredFilm;
-import com.bohdan.films_webapp.DAO.WatchedFilm;
-import com.bohdan.films_webapp.exception_handler.StarredFilmNotFoundException;
-import com.bohdan.films_webapp.exception_handler.WatchedFilmNotFoundException;
+import com.bohdan.films_webapp.exceptions.StarredFilmNotFoundException;
 
 import java.util.List;
 

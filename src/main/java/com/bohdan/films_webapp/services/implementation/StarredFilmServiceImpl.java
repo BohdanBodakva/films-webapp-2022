@@ -1,22 +1,20 @@
 package com.bohdan.films_webapp.services.implementation;
 
 import com.bohdan.films_webapp.DAO.StarredFilm;
-import com.bohdan.films_webapp.exception_handler.StarredFilmNotFoundException;
+import com.bohdan.films_webapp.exceptions.StarredFilmNotFoundException;
 import com.bohdan.films_webapp.repositories.StarredFilmRepository;
 import com.bohdan.films_webapp.services.StarredFilmService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class StarredFilmServiceImpl implements StarredFilmService {
     private final StarredFilmRepository starredFilmRepository;
-
-    @Autowired
-    public StarredFilmServiceImpl(StarredFilmRepository starredFilmRepository) {
-        this.starredFilmRepository = starredFilmRepository;
-    }
 
     @Override
     public List<StarredFilm> getAllStarredFilms() {

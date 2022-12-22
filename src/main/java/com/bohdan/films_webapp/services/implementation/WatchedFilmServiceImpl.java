@@ -1,24 +1,20 @@
 package com.bohdan.films_webapp.services.implementation;
 
-import com.bohdan.films_webapp.DAO.Film;
 import com.bohdan.films_webapp.DAO.WatchedFilm;
-import com.bohdan.films_webapp.exception_handler.FilmNotFoundException;
-import com.bohdan.films_webapp.exception_handler.WatchedFilmNotFoundException;
+import com.bohdan.films_webapp.exceptions.WatchedFilmNotFoundException;
 import com.bohdan.films_webapp.repositories.WatchedFilmRepository;
 import com.bohdan.films_webapp.services.WatchedFilmService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class WatchedFilmServiceImpl implements WatchedFilmService {
     private final WatchedFilmRepository watchedFilmRepository;
-
-    @Autowired
-    public WatchedFilmServiceImpl(WatchedFilmRepository watchedFilmRepository) {
-        this.watchedFilmRepository = watchedFilmRepository;
-    }
 
     @Override
     public List<WatchedFilm> getAllWatchedFilms() {
