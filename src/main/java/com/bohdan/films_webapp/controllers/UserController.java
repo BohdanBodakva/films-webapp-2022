@@ -2,6 +2,7 @@ package com.bohdan.films_webapp.controllers;
 
 import com.bohdan.films_webapp.DAO.Comment;
 import com.bohdan.films_webapp.DAO.User;
+import com.bohdan.films_webapp.DTO.CommentDto;
 import com.bohdan.films_webapp.DTO.FilmDto;
 import com.bohdan.films_webapp.DTO.UserDto;
 import com.bohdan.films_webapp.exceptions.CommentNotFoundException;
@@ -16,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -30,10 +30,10 @@ public class UserController {
 //  ========================================== USERS ========================================================
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserById(@PathVariable("userId") int userId){
+    public ResponseEntity<?> getUserByIdIfActive(@PathVariable("userId") int userId){
         try {
             return new ResponseEntity<>(
-                    UserDto.fromUser(userService.getUserById(userId)), HttpStatus.OK
+                    UserDto.fromUser(userService.getUserByIdIfActive(userId)), HttpStatus.OK
             );
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -59,7 +59,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/{userId}/delete")
     public ResponseEntity<?> makeUserDeletedById(@PathVariable("userId") int userId){
         try {
             userService.makeUserDeletedById(userId);
@@ -73,7 +73,7 @@ public class UserController {
 
     @GetMapping("/{userId}/films")
     public ResponseEntity<Set<FilmDto>> getAllDisplayedFilms(@PathVariable("userId") int userId){
-        return new ResponseEntity<>(FilmDto.fromFilmList(filmService.getAllDisplayedFilms()), HttpStatus.OK);
+        return new ResponseEntity<>(FilmDto.fromFilmSet(filmService.getAllDisplayedFilms()), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/films/{filmId}")
@@ -88,19 +88,6 @@ public class UserController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
-//    @PostMapping("/{userId}/films/{filmId}/makeWatched")
-//    public ResponseEntity<?> makeFilmWatchedByFilmIdAndUserIdAndSave(@PathVariable("userId") int userId,
-//                                                 @PathVariable("filmId") int filmId){
-//        try {
-//            filmService.makeFilmWatchedByFilmIdAndUserId(userId, filmId);
-//            return new ResponseEntity<>(
-//                     HttpStatus.OK
-//            );
-//        } catch (UserNotFoundException | FilmNotFoundException e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-//        }
-//    }
 
     @PostMapping("/{userId}/films/{filmId}/makeStarred")
     public ResponseEntity<?> makeFilmStarredByFilmIdAndUserIdAndSave(@PathVariable("userId") int userId,
@@ -130,7 +117,7 @@ public class UserController {
     public ResponseEntity<?> getAllWatchedFilmsByUserId(@PathVariable("userId") int userId){
         try {
             return new ResponseEntity<>(
-                   filmService.getAllWatchedFilmsByUserId(userId), HttpStatus.OK
+                   FilmDto.fromFilmSet(filmService.getAllWatchedFilmsByUserId(userId)), HttpStatus.OK
             );
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -151,7 +138,7 @@ public class UserController {
     public ResponseEntity<?> getAllStarredFilmsByUserId(@PathVariable("userId") int userId){
         try {
             return new ResponseEntity<>(
-                    filmService.getAllStarredFilmsByUserId(userId), HttpStatus.OK
+                    FilmDto.fromFilmSet(filmService.getAllStarredFilmsByUserId(userId)), HttpStatus.OK
             );
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -185,10 +172,21 @@ public class UserController {
 
     //  ========================================== COMMENTS ========================================================
 
+    @GetMapping("/{userId}/films/{watchedFilmId}/comments")
+    public ResponseEntity<?> getAllCommentsToFilm(@PathVariable("userId") int userId,
+                                                  @PathVariable("watchedFilmId") int watchedFilmId){
+        try {
+            return new ResponseEntity<>(
+                    CommentDto.fromCommentSet(commentService.getAllCommentsToFilmSortedByDateAsc(watchedFilmId)), HttpStatus.OK
+            );
+        } catch (FilmNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
-    @PostMapping("/{userId}/films/{watchedFilmId}/addComment")
-    public ResponseEntity<?> addCommentToFilmById(@PathVariable("userId") int userId,
+    @PostMapping("/{userId}/films/{watchedFilmId}/comments")
+    public ResponseEntity<?> addCommentToFilm(@PathVariable("userId") int userId,
                                                   @PathVariable("watchedFilmId") int watchedFilmId,
                                                   @RequestBody Comment comment){
         try {
@@ -200,7 +198,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}/films/{watchedFilmId}/comments/{commentId}")
-    public ResponseEntity<?> addCommentToFilmById(@PathVariable("userId") int userId,
+    public ResponseEntity<?> deleteCommentToFilm(@PathVariable("userId") int userId,
                                                   @PathVariable("watchedFilmId") int watchedFilmId,
                                                   @PathVariable("commentId") int commentId){
         try {

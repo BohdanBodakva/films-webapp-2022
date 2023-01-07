@@ -5,19 +5,20 @@ import com.bohdan.films_webapp.exceptions.FilmNotFoundException;
 import com.bohdan.films_webapp.exceptions.UserNotFoundException;
 
 import java.util.List;
+import java.util.Set;
 
 public interface FilmService {
-    List<Film> getAllFilms();
-    List<Film> getAllWatchedFilmsByUserId(int userId) throws UserNotFoundException;
-    List<Film> getAllStarredFilmsByUserId(int userId) throws UserNotFoundException;
+    Set<Film> getAllFilms();
+    Set<Film> getAllWatchedFilmsByUserId(int userId) throws UserNotFoundException;
+    Set<Film> getAllStarredFilmsByUserId(int userId) throws UserNotFoundException;
     Film getWatchedFilmByUserIdAndFilmId(int userId, int filmId) throws UserNotFoundException, FilmNotFoundException;
     Film getStarredFilmByUserIdAndFilmId(int userId, int filmId) throws UserNotFoundException, FilmNotFoundException;
     void makeFilmWatchedByFilmIdAndUserId(int userId, int filmId) throws UserNotFoundException, FilmNotFoundException;
     void makeFilmStarredByFilmIdAndUserId(int userId, int filmId) throws UserNotFoundException, FilmNotFoundException;
     void makeFilmUnstarredByFilmIdAndUserId(int userId, int filmId) throws UserNotFoundException, FilmNotFoundException;
-    List<Film> getAllDisplayedFilms();
-    List<Film> getAllDeletedFilms();
-    List<Film> getAllUnavailableFilms();
+    Set<Film> getAllDisplayedFilms();
+    Set<Film> getAllDeletedFilms();
+    Set<Film> getAllUnavailableFilms();
     Film getFilmById(int id) throws FilmNotFoundException;
     Film getFilmByIdIfDisplayed(int id) throws FilmNotFoundException;
     Film saveFilm(Film film) ;

@@ -2,6 +2,7 @@ package com.bohdan.films_webapp.DTO;
 
 import com.bohdan.films_webapp.DAO.Comment;
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,12 +12,12 @@ import java.util.stream.Collectors;
 @Data
 public class CommentDto {
     private int id;
-    private int user;
-    private int film;
+    private Integer user;
+    private Integer film;
     private String comment;
     private LocalDateTime date;
 
-    public CommentDto(int id, int user, int film, String comment, LocalDateTime date) {
+    public CommentDto(int id, Integer user, Integer film, String comment, LocalDateTime date) {
         this.id = id;
         this.user = user;
         this.film = film;

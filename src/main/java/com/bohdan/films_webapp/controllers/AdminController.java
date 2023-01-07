@@ -1,9 +1,12 @@
 package com.bohdan.films_webapp.controllers;
 
+
 import com.bohdan.films_webapp.DAO.Film;
 import com.bohdan.films_webapp.DTO.FilmDto;
 import com.bohdan.films_webapp.DTO.UserDto;
-import com.bohdan.films_webapp.exceptions.*;
+import com.bohdan.films_webapp.exceptions.CommentNotFoundException;
+import com.bohdan.films_webapp.exceptions.FilmNotFoundException;
+import com.bohdan.films_webapp.exceptions.UserNotFoundException;
 import com.bohdan.films_webapp.services.CommentService;
 import com.bohdan.films_webapp.services.FilmService;
 import com.bohdan.films_webapp.services.UserService;
@@ -13,6 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
+
+
+
+
 
 @RestController
 @RequestMapping("/api/admin")
@@ -31,7 +38,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public ResponseEntity<Set<UserDto>> getAllUsers(){
-        return new ResponseEntity<>(UserDto.fromUserList(userService.getAllUsers()), HttpStatus.OK);
+        return new ResponseEntity<>(UserDto.fromUserSet(userService.getAllUsers()), HttpStatus.OK);
     }
 
     @GetMapping("/users/{userId}")
@@ -45,17 +52,17 @@ public class AdminController {
 
     @GetMapping("/users/banned")
     public ResponseEntity<Set<UserDto>> getAllBannedUsers(){
-        return new ResponseEntity<>(UserDto.fromUserList(userService.getAllBannedUsers()), HttpStatus.OK);
+        return new ResponseEntity<>(UserDto.fromUserSet(userService.getAllBannedUsers()), HttpStatus.OK);
     }
 
     @GetMapping("/users/active")
     public ResponseEntity<Set<UserDto>> getAllActiveUsers(){
-        return new ResponseEntity<>(UserDto.fromUserList(userService.getAllActiveUsers()), HttpStatus.OK);
+        return new ResponseEntity<>(UserDto.fromUserSet(userService.getAllActiveUsers()), HttpStatus.OK);
     }
 
     @GetMapping("/users/deleted")
     public ResponseEntity<Set<UserDto>> getAllDeletedUsers(){
-        return new ResponseEntity<>(UserDto.fromUserList(userService.getAllDeletedUsers()), HttpStatus.OK);
+        return new ResponseEntity<>(UserDto.fromUserSet(userService.getAllDeletedUsers()), HttpStatus.OK);
     }
 
     @DeleteMapping("/users/{userId}/delete")
@@ -104,7 +111,7 @@ public class AdminController {
     public ResponseEntity<?> getWatchedFilmsByUserId(@PathVariable("userId") int userId){
         try {
             return new ResponseEntity<>(
-                    FilmDto.fromFilmList(filmService.getAllWatchedFilmsByUserId(userId)), HttpStatus.OK
+                    FilmDto.fromFilmSet(filmService.getAllWatchedFilmsByUserId(userId)), HttpStatus.OK
             );
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -115,7 +122,7 @@ public class AdminController {
     public ResponseEntity<?> getStarredFilmsByUserId(@PathVariable("userId") int userId){
         try {
             return new ResponseEntity<>(
-                    FilmDto.fromFilmList(filmService.getAllStarredFilmsByUserId(userId)), HttpStatus.OK
+                    FilmDto.fromFilmSet(filmService.getAllStarredFilmsByUserId(userId)), HttpStatus.OK
             );
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -126,22 +133,22 @@ public class AdminController {
 
     @GetMapping("/films")
     public ResponseEntity<Set<FilmDto>> getAllFilms(){
-        return new ResponseEntity<>(FilmDto.fromFilmList(filmService.getAllFilms()), HttpStatus.OK);
+        return new ResponseEntity<>(FilmDto.fromFilmSet(filmService.getAllFilms()), HttpStatus.OK);
     }
 
     @GetMapping("/films/displayed")
     public ResponseEntity<Set<FilmDto>> getAllDisplayedFilms(){
-        return new ResponseEntity<>(FilmDto.fromFilmList(filmService.getAllDisplayedFilms()), HttpStatus.OK);
+        return new ResponseEntity<>(FilmDto.fromFilmSet(filmService.getAllDisplayedFilms()), HttpStatus.OK);
     }
 
     @GetMapping("/films/deleted")
     public ResponseEntity<Set<FilmDto>> getAllDeletedFilms(){
-        return new ResponseEntity<>(FilmDto.fromFilmList(filmService.getAllDeletedFilms()), HttpStatus.OK);
+        return new ResponseEntity<>(FilmDto.fromFilmSet(filmService.getAllDeletedFilms()), HttpStatus.OK);
     }
 
     @GetMapping("/films/unavailable")
     public ResponseEntity<Set<FilmDto>> getAllUnavailableFilms(){
-        return new ResponseEntity<>(FilmDto.fromFilmList(filmService.getAllUnavailableFilms()), HttpStatus.OK);
+        return new ResponseEntity<>(FilmDto.fromFilmSet(filmService.getAllUnavailableFilms()), HttpStatus.OK);
     }
 
     @GetMapping("/films/{filmId}")

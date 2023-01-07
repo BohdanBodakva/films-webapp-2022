@@ -1,103 +1,67 @@
-DROP DATABASE IF EXISTS `films_webapp_december_2022`;
-CREATE DATABASE `films_webapp_december_2022`;
-USE `films_webapp_december_2022` ;
-
-
-DROP TABLE IF EXISTS `films_webapp_december_2022`.`comment`;
-DROP TABLE IF EXISTS `films_webapp_december_2022`.`watched_film`;
-DROP TABLE IF EXISTS `films_webapp_december_2022`.`starred_film`;
-DROP TABLE IF EXISTS `films_webapp_december_2022`.`film`;
-DROP TABLE IF EXISTS `films_webapp_december_2022`.`user`;
+DROP TABLE IF EXISTS "comment";
+DROP TABLE IF EXISTS "watched_film";
+DROP TABLE IF EXISTS "starred_film";
+DROP TABLE IF EXISTS "film";
+DROP TABLE IF EXISTS "user";
 
 
 -- -----------------------------------------------------
--- Table `films_webapp_december_2022`.`film`
+-- Table "film"
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `films_webapp_december_2022`.`film` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(50) NOT NULL,
-  `year` INT NOT NULL,
-  `image_name` VARCHAR(50) NOT NULL,
-  `description` TEXT NULL DEFAULT NULL,
-  `status` VARCHAR(40) NOT NULL,
-  PRIMARY KEY (`id`));
+CREATE TABLE "film" (
+                        "id" SERIAL PRIMARY KEY NOT NULL,
+                        "name" VARCHAR(50) NOT NULL,
+                        "year" INT NOT NULL,
+                        "image_name" VARCHAR(50) NOT NULL,
+                        "description" TEXT,
+                        "status" VARCHAR(40) NOT NULL
+);
 
 
 -- -----------------------------------------------------
--- Table `films_webapp_december_2022`.`user`
+-- Table "user"
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `films_webapp_december_2022`.`user` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NOT NULL,
-  `surname` VARCHAR(45) NOT NULL,
-  `email` VARCHAR(45) NOT NULL,
-  `role` VARCHAR(45) NOT NULL,
-  `password` VARCHAR(130) NOT NULL,
-  `status` VARCHAR(40) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE);
+CREATE TABLE "user" (
+                        "id" SERIAL PRIMARY KEY NOT NULL,
+                        "name" VARCHAR(45) NOT NULL,
+                        "surname" VARCHAR(45) NOT NULL,
+                        "email" VARCHAR(70) NOT NULL UNIQUE,
+                        "role" VARCHAR(45) NOT NULL,
+                        "password" VARCHAR(130) NOT NULL,
+                        "status" VARCHAR(40) NOT NULL
+);
 
 
 -- -----------------------------------------------------
--- Table `films_webapp_december_2022`.`starred_film`
+-- Table "starred_film"
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `films_webapp_december_2022`.`starred_film` (
-  `film_id` INT NOT NULL,
-  `user_id` INT NOT NULL,
-  INDEX `fk_starred_film_film1_idx` (`film_id` ASC) VISIBLE,
-  INDEX `fk_starred_film_user1_idx` (`user_id` ASC) VISIBLE,
-  PRIMARY KEY (`film_id`, `user_id`),
-  CONSTRAINT `fk_starred_film_film1`
-    FOREIGN KEY (`film_id`)
-    REFERENCES `films_webapp_december_2022`.`film` (`id`),
-  CONSTRAINT `fk_starred_film_user1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `films_webapp_december_2022`.`user` (`id`));
+CREATE TABLE "starred_film" (
+                                "film_id" INT NOT NULL REFERENCES "film"("id"),
+                                "user_id" INT NOT NULL REFERENCES "user"("id"),
+                                CONSTRAINT "starred_film_pkey" PRIMARY KEY ("film_id", "user_id")
+);
 
 
 -- -----------------------------------------------------
--- Table `films_webapp_december_2022`.`watched_film`
+-- Table "watched_film"
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `films_webapp_december_2022`.`watched_film` (
-  `film_id` INT NOT NULL,
-  `user_id` INT NOT NULL,
-  INDEX `fk_watched_film_film_idx` (`film_id` ASC) VISIBLE,
-  INDEX `fk_watched_film_user1_idx` (`user_id` ASC) VISIBLE,
-  PRIMARY KEY (`film_id`, `user_id`),
-  CONSTRAINT `fk_watched_film_film`
-    FOREIGN KEY (`film_id`)
-    REFERENCES `films_webapp_december_2022`.`film` (`id`),
-  CONSTRAINT `fk_watched_film_user1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `films_webapp_december_2022`.`user` (`id`));
+CREATE TABLE "watched_film" (
+                                "film_id" INT NOT NULL REFERENCES "film"("id"),
+                                "user_id" INT NOT NULL REFERENCES "user"("id"),
+                                CONSTRAINT "watched_film_pkey" PRIMARY KEY ("film_id", "user_id")
+);
 
 
 -- -----------------------------------------------------
--- Table `films_webapp_december_2022`.`comment`
+-- Table "comment"
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `films_webapp_december_2022`.`comment` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `comment` TEXT NOT NULL,
-  `date` DATETIME NOT NULL,
-  `status` VARCHAR(40) NOT NULL,
-  `film_id` INT NOT NULL,
-  `user_id` INT NOT NULL,
-  PRIMARY KEY (`id`),
-  INDEX `fk_comment_film1_idx` (`film_id` ASC) VISIBLE,
-  INDEX `fk_comment_user1_idx` (`user_id` ASC) VISIBLE,
-  CONSTRAINT `fk_comment_film1`
-    FOREIGN KEY (`film_id`)
-    REFERENCES `films_webapp_december_2022`.`film` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_comment_user1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `films_webapp_december_2022`.`user` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION);
-    
-    
+CREATE TABLE "comment"(
+                          "id" SERIAL PRIMARY KEY NOT NULL ,
+                          "comment" TEXT NOT NULL,
+                          "date" TIMESTAMP NOT NULL,
+                          "status" VARCHAR(40) NOT NULL,
+                          "film_id" INT NOT NULL REFERENCES "film"("id"),
+                          "user_id" INT NOT NULL REFERENCES "user"("id")
+);
 
-insert into user (name, surname, email, role, password, status) values ("u1", "u1", "u1@email.com", "ROLE_USER", "$2a$12$zxv4PYNx.sBat7qdpz0RhO3tQh0sAnTJC6iBosGYD5FIxdqPWo5Qu", "ACTIVE");
-insert into user (name, surname, email, role, password, status) values ("u2", "u2", "u2@email.com", "ROLE_USER", "$2a$12$ism8IHpbKL71w0x1YoOb2O7uyPShncXNXCXUTaISln9iLb2BWrWTu", "ACTIVE");
-insert into user (name, surname, email, role, password, status) values ("admin", "admin", "admin@email.com", "ROLE_ADMIN", "$2a$12$y6kB1ogEa04B7hb8m.MUqOOMC5vQ0xgizvcCIG9GYO3BhWZ.bPqL2", "ACTIVE");
+

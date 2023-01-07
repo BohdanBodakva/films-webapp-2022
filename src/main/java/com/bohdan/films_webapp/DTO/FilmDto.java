@@ -3,9 +3,9 @@ package com.bohdan.films_webapp.DTO;
 import com.bohdan.films_webapp.DAO.Comment;
 import com.bohdan.films_webapp.DAO.Film;
 import com.bohdan.films_webapp.DAO.User;
-import com.bohdan.films_webapp.DAO.enums.FilmStatus;
 import lombok.Data;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,7 +20,7 @@ public class FilmDto {
     private String status;
     private Set<Integer> usersThatStarredTheFilm;
     private Set<Integer> usersThatWatchedTheFilm;
-    private Set<CommentDto> comments;
+    private List<List<String>> comments;
 
     public FilmDto(int id, String name,
                    int year,
@@ -29,7 +29,7 @@ public class FilmDto {
                    String status,
                    Set<Integer> usersThatStarredTheFilm,
                    Set<Integer> usersThatWatchedTheFilm,
-                   Set<CommentDto> comments) {
+                   List<List<String>> comments) {
         this.id = id;
         this.name = name;
         this.year = year;
@@ -53,11 +53,19 @@ public class FilmDto {
                         .stream().map(User::getId).collect(Collectors.toSet()),
                 film.getUsersThatWatchedTheFilm()
                         .stream().map(User::getId).collect(Collectors.toSet()),
-                CommentDto.fromCommentSet(film.getComments())
+                film.getComments()
+                        .stream()
+                        .sorted(Comparator.comparing(Comment::getDate).reversed())
+                        .map(comment -> List.of(
+                                comment.getComment(),
+                                comment.getUser().getEmail(),
+                                comment.getDate().toString()
+                        ))
+                        .collect(Collectors.toList())
         );
     }
 
-    public static Set<FilmDto> fromFilmList(List<Film> films){
+    public static Set<FilmDto> fromFilmSet(Set<Film> films){
         return films.stream()
                 .map(FilmDto::fromFilm)
                 .collect(Collectors.toSet());

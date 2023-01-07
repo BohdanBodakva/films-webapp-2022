@@ -4,15 +4,16 @@ import com.bohdan.films_webapp.DAO.User;
 import com.bohdan.films_webapp.exceptions.EmailAlreadyExistsException;
 import com.bohdan.films_webapp.exceptions.UserNotFoundException;
 
-import java.util.List;
+import java.util.Set;
 
 public interface UserService {
-    List<User> getAllUsers();
+    Set<User> getAllUsers();
     User getUserById(int id) throws UserNotFoundException;
-    User getUserByEmail(String email) throws UserNotFoundException;
-    List<User> getAllActiveUsers();
-    List<User> getAllBannedUsers();
-    List<User> getAllDeletedUsers();
+    User getUserByIdIfActive(int id) throws UserNotFoundException;
+    User getUserByUsername(String email) throws UserNotFoundException;
+    Set<User> getAllActiveUsers();
+    Set<User> getAllBannedUsers();
+    Set<User> getAllDeletedUsers();
     User saveUser(User user) ;
     User updateUserById(int id, User user) throws UserNotFoundException, EmailAlreadyExistsException;
     void makeUserDeletedById(int id) throws UserNotFoundException;

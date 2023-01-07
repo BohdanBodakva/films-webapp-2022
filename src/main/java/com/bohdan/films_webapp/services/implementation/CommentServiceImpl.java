@@ -14,8 +14,12 @@ import com.bohdan.films_webapp.services.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,17 +29,27 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
 
     @Override
-    public List<Comment> getAllCommentsSortedByDateAsc() {
+    public Set<Comment> getAllCommentsToFilmSortedByDateAsc(int filmId) throws FilmNotFoundException {
+        filmRepository.findById(filmId)
+                .orElseThrow(() -> new FilmNotFoundException("Film with id = " + filmId + " wasn't found"));
+
         return commentRepository.findAll()
-                .stream().sorted(Comparator.comparing(Comment::getDate))
-                .toList();
+                .stream()
+                .filter(comment -> comment.getFilm().getId() == filmId)
+                .sorted(Comparator.comparing(Comment::getDate))
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public List<Comment> getAllCommentsSortedByDateDesc() {
+    public Set<Comment> getAllCommentsToFilmSortedByDateDesc(int filmId) throws FilmNotFoundException {
+        filmRepository.findById(filmId)
+                .orElseThrow(() -> new FilmNotFoundException("Film with id = " + filmId + " wasn't found"));
+
         return commentRepository.findAll()
-                .stream().sorted(Comparator.comparing(Comment::getDate).reversed())
-                .toList();
+                .stream()
+                .filter(comment -> comment.getFilm().getId() == filmId)
+                .sorted(Comparator.comparing(Comment::getDate).reversed())
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -53,6 +67,14 @@ public class CommentServiceImpl implements CommentService {
 
         comment.setUser(user);
         comment.setFilm(film);
+        comment.setStatus(CommentStatus.DISPLAYED);
+        comment.setDate(LocalDateTime.now());
+
+        user.getComments().add(comment);
+        film.getComments().add(comment);
+
+        userRepository.save(user);
+        filmRepository.save(film);
 
         return commentRepository.save(comment);
     }
@@ -68,13 +90,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> getAllCommentsByUserId(int userId) {
-        return commentRepository.findCommentsByUserId(userId);
+    public Set<Comment> getAllCommentsByUserId(int userId) {
+        return new HashSet<>(commentRepository.findCommentsByUserId(userId));
     }
 
     @Override
-    public List<Comment> getAllCommentsByFilmId(int filmId) {
-        return commentRepository.findCommentsByFilmId(filmId);
+    public Set<Comment> getAllCommentsByFilmId(int filmId) {
+        return new HashSet<>(commentRepository.findCommentsByFilmId(filmId));
     }
 
     @Override

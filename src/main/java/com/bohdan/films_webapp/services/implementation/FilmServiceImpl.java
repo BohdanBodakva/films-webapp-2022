@@ -12,10 +12,12 @@ import com.bohdan.films_webapp.repositories.UserRepository;
 import com.bohdan.films_webapp.services.FilmService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -26,22 +28,22 @@ public class FilmServiceImpl implements FilmService {
     private final CommentRepository commentRepository;
 
     @Override
-    public List<Film> getAllFilms() {
-        return filmRepository.findAll();
+    public Set<Film> getAllFilms() {
+        return new HashSet<>(filmRepository.findAll());
     }
 
     @Override
-    public List<Film> getAllWatchedFilmsByUserId(int userId) throws UserNotFoundException {
+    public Set<Film> getAllWatchedFilmsByUserId(int userId) throws UserNotFoundException {
         userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Film with id = " + userId + " doesn't exist"));
-        return filmRepository.findAllWatchedFilmsByUserId(userId);
+        return new HashSet<>(filmRepository.findAllWatchedFilmsByUserId(userId));
     }
 
     @Override
-    public List<Film> getAllStarredFilmsByUserId(int userId) throws UserNotFoundException {
+    public Set<Film> getAllStarredFilmsByUserId(int userId) throws UserNotFoundException {
         userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User with id = " + userId + " doesn't exist"));
-        return filmRepository.findAllStarredFilmsByUserId(userId);
+        return new HashSet<>(filmRepository.findAllStarredFilmsByUserId(userId));
     }
 
     @Override
@@ -69,7 +71,7 @@ public class FilmServiceImpl implements FilmService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User with id = " + userId + " doesn't exist"));
         Film film = filmRepository.findById(filmId)
-                .orElseThrow(() -> new FilmNotFoundException("Film with id = " + userId + " doesn't exist"));
+                .orElseThrow(() -> new FilmNotFoundException("Film with id = " + filmId + " doesn't exist"));
 
         film.getUsersThatWatchedTheFilm().add(user);
         user.getWatchedFilms().add(film);
@@ -107,18 +109,18 @@ public class FilmServiceImpl implements FilmService {
     }
 
     @Override
-    public List<Film> getAllDisplayedFilms() {
-        return filmRepository.findAllDisplayedFilms();
+    public Set<Film> getAllDisplayedFilms() {
+        return new HashSet<>(filmRepository.findAllDisplayedFilms());
     }
 
     @Override
-    public List<Film> getAllDeletedFilms() {
-        return filmRepository.findAllDeletedFilms();
+    public Set<Film> getAllDeletedFilms() {
+        return new HashSet<>(filmRepository.findAllDeletedFilms());
     }
 
     @Override
-    public List<Film> getAllUnavailableFilms() {
-        return filmRepository.findAllUnavailableFilms();
+    public Set<Film> getAllUnavailableFilms() {
+        return new HashSet<>(filmRepository.findAllUnavailableFilms());
     }
 
     @Override
@@ -134,7 +136,7 @@ public class FilmServiceImpl implements FilmService {
                 .toList();
 
         if(films.isEmpty()){
-            throw new FilmNotFoundException("Film with id = " + id + " doesn't exist or is unavailable");
+            throw new FilmNotFoundException("Film with id = " + id + " doesn't exist or is deleted/unavailable");
         }
 
         return films.get(0);
