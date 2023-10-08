@@ -1,0 +1,29 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: openjdk17
+    commands:
+      - echo "[INFO] Installing dependencies..."
+      - apt-get -y install maven
+      - mvn --version
+
+  pre_build:
+    commands:
+      - echo "[INFO] Pre-Build Phase..."
+
+  build:
+    commands:
+      - echo "[INFO] Build Phase..."
+      - mvn clean install
+
+  post_build:
+    commands:
+      - echo "[INFO] Post-Build Phase..."
+
+artifacts:
+  files:
+    - target/*.jar
+  discard-paths: yes
+  name: films-webapp-artifact
