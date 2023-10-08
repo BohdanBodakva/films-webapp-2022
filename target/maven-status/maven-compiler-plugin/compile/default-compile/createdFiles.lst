@@ -23,6 +23,7 @@ com\bohdan\films_webapp\DAO\enums\CommentStatus.class
 com\bohdan\films_webapp\controllers\FilmController.class
 com\bohdan\films_webapp\configuration\AppConfiguration.class
 com\bohdan\films_webapp\controllers\UserController.class
+com\bohdan\films_webapp\controllers\A.class
 com\bohdan\films_webapp\authentication\AuthenticationService.class
 com\bohdan\films_webapp\authentication\RegisterRequest.class
 com\bohdan\films_webapp\services\implementation\UserServiceImpl.class
