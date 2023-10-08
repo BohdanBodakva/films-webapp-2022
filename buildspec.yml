@@ -6,7 +6,7 @@ phases:
       java: corretto17
     commands:
       - echo "[INFO] Installing dependencies..."
-      - yum install maven
+      - sudo yum install maven
       - mvn --version
 
   pre_build:
