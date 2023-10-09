@@ -2,4 +2,4 @@
 # shellcheck disable=SC2164
 cd /home/ec2-user/server
 sudo java -jar -Dserver.port=80 \
-    *.jar > /dev/null 2> /dev/null < /dev/null &
+    *.jar > /var/log/myapp.log 2> /dev/null < /dev/null &
