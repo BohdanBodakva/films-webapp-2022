@@ -27,7 +27,7 @@ public class SecurityConfiguration {
                 .hasAuthority("ADMIN")
                 .requestMatchers("/api/users/**")
                 .hasAuthority("USER")
-                .requestMatchers("/api/auth/**", "/api/films/**", "/api/a/**", "/swagger-ui/**")
+                .requestMatchers("/api/auth/**", "/api/films/**", "/api/a/**", "/swagger-ui/**", "/v3/**")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()
