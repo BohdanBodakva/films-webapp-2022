@@ -20,6 +20,6 @@ public class A {
 
     @GetMapping("/")
     public ResponseEntity<String> adminPage() {
-        return new ResponseEntity<>("Hello!", HttpStatus.OK);
+        return new ResponseEntity<>("Hello, 11111111!", HttpStatus.OK);
     }
 }
